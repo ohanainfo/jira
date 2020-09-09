@@ -116,5 +116,7 @@ psql:
   DBPASS: "Jira@123"
   ATL_JDBC_URL: "jdbc:postgresql://10.43.16.3:5432/jiradb"
 ```
+4 - Ops… there is no Step Four… just enjoy it! :roll_eyes:
 
+At the time I created this article, unfortunately I needed to shutdown my environment due to lack of funds. :money_mouth_face:   
 

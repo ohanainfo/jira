@@ -17,4 +17,6 @@ I know that this is a simple deployment with a lot of space from improvements.
 
 Let´s start the CookBook  
 
-# PS - I assume you have some knowledge with Kubernetes, otherwise, take the free course from Google.
+### PS - I assume you have some knowledge with Kubernetes, otherwise, take the free course from Google.
+
+*Since an image spokes for thousand words... The following diagram explain how I deployed the environment.*

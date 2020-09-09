@@ -1,0 +1,15 @@
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: jira-backendconfig
+spec:
+  timeoutSec: 40
+  sessionAffinity:
+    affinityType: "GENERATED_COOKIE"
+    affinityCookieTtlSec: 60
+  healthCheck:
+    checkIntervalSec: 30
+    port: 8080
+    type: http
+    requestPath: /status
+

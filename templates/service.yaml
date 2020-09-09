@@ -1,0 +1,45 @@
+# Documentation: https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: jira
+  labels:
+  {{- include "jira-chart.labels" . | indent 4 }}
+
+  annotations:
+    traefik.backend.loadbalancer.sticky: "true"
+    cloud.google.com/load-balancer-type: "Internal"
+    cloud.google.com/backend-config: '{"default": "jira-backendconfig"}'
+    cloud.google.com/neg: '{"ingress":true}'
+    ingress.kubernetes.io/affinity: cookie
+    
+spec:
+  externalTrafficPolicy: Local
+  ports:
+    # port is what this service should serve on, and targetPort is the port in the container.
+    - port: 8080
+      name: jira-main
+      targetPort: 8080
+      protocol: TCP
+    - port: 8888
+      name: jira-internal-connector
+      targetPort: 8888
+      protocol: TCP
+    - port: 40001
+      name: rmi
+      protocol: TCP
+      targetPort: 40001
+    - port: 40011
+      name: remote-object
+      protocol: TCP
+      targetPort: 40011
+
+{{- if .Values.Datacenter.Enabled }}
+  clusterIP: None
+{{- else }}
+  type: {{ .Values.Service.Type | default "ClusterIP" }}
+{{- end }}
+
+  selector:
+    app: {{ .Release.Name }}
+  sessionAffinity: ClientIP

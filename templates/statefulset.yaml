@@ -1,0 +1,105 @@
+# Statefulset are in beta state in k8s 1.5-1.8
+apiVersion: {{ .Values.apiVersion | default "apps/v1beta1" }}
+
+# Statefulsets are in GA state in k8s 1.9+ (not beta anymore)
+# apiVersion: apps/v1
+
+## We needed to use VolumeTemplate, which does not allow use of Deployment, so we had to use StatefulSet
+# kind: Deployment
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{- include "jira-chart.labels" . | indent 4 }}
+spec:
+  # This service should already exist
+  serviceName: jira-service
+  replicas: {{ .Values.Replicas | default 1 }}    ## replicas 2
+  selector:
+    matchLabels:
+      release: {{ .Release.Name }}
+      app: jira
+  template:
+    metadata:
+      labels:
+        release: {{ .Release.Name }}
+        app: jira
+    spec:
+      serviceAccountName: jira
+      terminationGracePeriodSeconds: {{ .Values.TerminationGracePeriodSeconds | default 50 }}
+      containers:
+      - name: {{ required "A container name is required!" .Values.ContainerName }}
+        image: {{ .Values.Image.Name }}:{{ .Values.Image.Tag }}
+        imagePullPolicy: {{ .Values.Image.ImagePullPolicy }}
+                
+        ports:
+          - containerPort: 8080
+            name: jira-main
+          - containerPort: 40001
+            name: rmi
+          - containerPort: 40011
+            name: remote-object
+
+        env:
+          - name: DATACENTER_MODE
+            value: "true"
+          - name: JIRA_DATACENTER_SHARE
+            value: {{ .Values.Persistence.DatacenterMountPath }}
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: JIRA_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: JIRA_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: ATL_PROXY_NAME
+            value: {{ .Values.EnvVars.X_PROXY_NAME | quote }}
+          - name: ATL_PROXY_PORT
+            value: {{ .Values.EnvVars.X_PROXY_PORT | quote }}
+          - name: ATL_TOMCAT_SCHEME
+            value: {{ .Values.EnvVars.X_PROXY_SCHEME | quote }}
+          - name: ATL_JDBC_URL
+            value: {{ .Values.psql.ATL_JDBC_URL | quote }}
+          - name: ATL_JDBC_USER
+            value: {{ .Values.psql.DBUSER | quote }}
+          - name: ATL_JDBC_PASSWORD
+            value: {{ .Values.psql.DBPASS | quote }}
+          - name: ATL_DB_DRIVER
+            value: "org.postgresql.Driver"
+          - name: ATL_DB_TYPE
+            value: "postgres72"
+
+        volumeMounts:
+          - name: "jira-persistent-storage"
+            mountPath: /var/atlassian/application-data/jira
+          - name: "jira-shared"
+            mountPath: /var/atlassian/jiradatacenter
+
+      volumes:
+        - name: jira-shared
+          persistentVolumeClaim:
+            claimName: jiradc-pvc
+        
+  volumeClaimTemplates:
+  - metadata:
+      name: jira-persistent-storage
+    spec:
+      accessModes: 
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.Persistence.VolumeClaimTemplates.Storage | quote }}
+      storageClassName: {{ .Values.Persistence.VolumeClaimTemplates.StorageClassName | quote }}
+  {{- if .Values.Persistence.VolumeClaimTemplates.Selector.Enabled }}
+      selector:
+        matchLabels:
+          {{- range $key,$value := .Values.Persistence.VolumeClaimTemplates.Selector.MatchLabels }}
+          {{ $key }} : {{ $value }}
+          {{- end }}
+  {{- end }}
+

@@ -11,7 +11,7 @@ Datacenter:
 #choose the version you want to deploy from Official repo from Atlassian
 Image:
   Name: "atlassian/jira-software"
-  Tag: "8.5.3"
+  Tag: "8.12.1"
   ImagePullPolicy: "IfNotPresent"
 
 ContainerPort: 8080

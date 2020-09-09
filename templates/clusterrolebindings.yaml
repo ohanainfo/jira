@@ -10,4 +10,3 @@ subjects:
 - kind: ServiceAccount
   name: jira
   namespace: {{ .Release.Namespace }}
-{{- end }}

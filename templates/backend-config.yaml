@@ -6,7 +6,7 @@ spec:
   timeoutSec: 40
   sessionAffinity:
     affinityType: "GENERATED_COOKIE"
-    affinityCookieTtlSec: 60
+    affinityCookieTtlSec: 3600
   healthCheck:
     checkIntervalSec: 30
     port: 8080

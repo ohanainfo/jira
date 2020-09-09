@@ -38,4 +38,9 @@ There is a order to deploy, so pay attention:
     #deploy the NFS Persistent Volume
     kubectl apply -f jira/templates/nfs-pv.yaml
 ```
+2 - After that, create a service account named Jira with the following command:
+```
+kubectl apply -f jira/templates/serviceaccount.yaml
+```
+3 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. **IMPORTANT**
 

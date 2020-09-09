@@ -20,3 +20,4 @@ Let´s start the CookBook
 ### PS - I assume you have some knowledge with Kubernetes, otherwise, take the free course from Google.
 
 *Since an image spokes for thousand words... The following diagram explain how I deployed the environment.*
+![Kube Diagram](https://github.com/ohanainfo/JiraDC_on_GKE/blob/master/images/Kube-diagram.jpg)

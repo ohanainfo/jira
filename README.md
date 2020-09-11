@@ -43,80 +43,9 @@ Our pre-requisites are:
 ```
 kubectl apply -f jira/templates/serviceaccount.yaml
 ```
-3 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. **IMPORTANT**
-```
-apiVersion: apps/v1
-#Initially deploy with 1 replica and then adjust the number to your needs
-Replicas: 1
-ContainerName: jira
+3 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. ** THIS IS IMPORTANT**
+https://github.com/ohanainfo/JiraDC_on_GKE/blob/master/values.yaml
 
-RBAC:
-  Enabled: true
-Datacenter:
-  Enabled: true
-
-#choose the version you want to deploy from Official repo from Atlassian
-Image:
-  Name: "atlassian/jira-software"
-  Tag: "8.12.1"
-  ImagePullPolicy: "IfNotPresent"
-
-ContainerPort: 8080
-TerminationGracePeriodSeconds: 50
-
-EnvVars:
-  X_PROXY_NAME: "jira.local" # change it later on Jira System
-  X_PROXY_PORT: "80"
-  X_PROXY_SCHEME: "http"
-  X_CONTEXT_PATH: ""
-  ADDITIONAL_CONNECTOR: "false"
-  JAVA_OPTS: ""
-  CATALINA_OPTS: ""
-  jvmMinHeapSize: 384M
-  jvmMaxHeapSize: 768M
-  jvmAdditionalMemoryOptions: "-XX:MaxMetaspaceSize=512m -XX:MaxDirectMemorySize=10m"
-  jvmAdditionalOptions: ""
-service:
-  type: ClusterIP
-  port: 8080
-
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-
-  path: /
-  hosts:
-    - jira.local
-
-SecurityContext: 1000
-
-Persistence:
-  DatacenterMountPath: /var/atlassian/jira-datacenter/
-  VolumeClaimTemplates:
-     AccessModes: ReadWriteOnce
-     Storage: 5Gi
-     StorageClassName: standard
-     Selector:
-       Enabled: false
-       MatchLabels:
-         app: jira
-         system: production
-         type: homefolder
-
-PodDisruption:
-  Enabled: true
-  MinAvailable: 1
-
-#Adjust the details below from the Google SQL Instance created (create a blank DB and add the jiradb user.
-psql:
-  HOST: "10.43.16.3"
-  PORT: "5432"
-  DATABASE: "jiradb"
-  DBUSER: "jira-user"
-  DBPASS: "Jira@123"
-  ATL_JDBC_URL: "jdbc:postgresql://10.43.16.3:5432/jiradb"
-```
 ### 4 - Ops… there is no Step Four… just enjoy it! :roll_eyes:
 
 At the time I created this article, unfortunately I needed to shutdown my environment due to lack of funds. :money_mouth_face:   

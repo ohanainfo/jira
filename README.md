@@ -20,7 +20,7 @@ Let´s start the CookBook :yum:
 ### PS - I assume you have some knowledge with Kubernetes, otherwise, take the free course from Google.
 
 *Since an image spokes for thousand words... The following diagram explain how I deployed the environment.*
-![Kube Diagram](https://github.com/ohanainfo/JiraDC_on_GKE/blob/master/images/Kube-diagram.jpg)
+![Kube Diagram](https://github.com/ohanainfo/jira/blob/master/images/Kube-diagram.jpg)
 To deploy that info I made a research and read hundreds of sites and knowledge articles from Google, Kubernetes Github, Medium Articles, Kubernetes.io articles, StackOverFlow posts…  but my special thanks go to Praqma and Steven Hipwell whose I learned a lot from their articles. 
 
 Let´s end the smooth talk and jump to the code.
@@ -30,23 +30,32 @@ Our pre-requisites are:
 - [x] A previously PostgreSQL instance to adjust the parameters on values.yaml to passthrough the variables to the Jira Pods. - https://cloud.google.com/sql / https://cloud.google.com/sql/docs/postgres/create-manage-databases
 - [x] A FileStore Instance to be used as SharedHome (on other Cloud Providers you can create a NFS Disk directly from Helm, but not at GCP yet). - https://cloud.google.com/filestore / https://cloud.google.com/filestore/docs/quickstart-console
 
-### **There is a order to deploy, so pay attention and do it after the previous tasks:**
+### **There is a order to deploy, do it after the previous tasks:**
 
-1 - Create the Shared Persistent Disk first (nfs-pv.yaml file inside templates folder). Edit with the Sharefolder and IP address of NFS Disk created previously following the steps below:
+1 - On the Google Cloud, after create a Cluster (https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-cluster), go to Cloud Shell and pull the repository:
+```
+git clone https://github.com/ohanainfo/jira
+```
+2 - Create the Shared Persistent Disk first (nfs-pv.yaml file inside templates folder). Edit with the Sharefolder and IP address of NFS Disk created previously following the steps below:
 ```
     #edit the nfs-pv.yaml file to adjust properties
     vi jira/templates/nfs-pv.yaml
     #deploy the NFS Persistent Volume
     kubectl apply -f jira/templates/nfs-pv.yaml
 ```
-2 - After that, create a service account named Jira with the following command:
+3 - After that, create a service account named Jira with the following command:
 ```
 kubectl apply -f jira/templates/serviceaccount.yaml
 ```
-3 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. ** THIS IS IMPORTANT**
+4 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. ** THIS IS IMPORTANT**
 https://github.com/ohanainfo/JiraDC_on_GKE/blob/master/values.yaml
 
-### 4 - Ops… there is no Step Four… just enjoy it! :roll_eyes:
+5 - Deploy the remaining artifacts using Helm:
+```
+helm install jira jira
+```
+
+### 6 - Ops… there is no Step Six… just enjoy it! :roll_eyes:
 
 At the time I created this article, unfortunately I needed to shutdown my environment due to lack of funds. :money_mouth_face:   
 

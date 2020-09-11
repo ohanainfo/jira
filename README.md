@@ -49,6 +49,10 @@ kubectl apply -f jira/templates/serviceaccount.yaml
 ```
 4 - Take a look on the Helm file (values.yaml) and edit the necessary parameters. ** THIS IS IMPORTANT**
 https://github.com/ohanainfo/JiraDC_on_GKE/blob/master/values.yaml
+And them, edit it to match your needs:
+```
+vi jira/values.yaml
+```
 
 5 - Deploy the remaining artifacts using Helm:
 ```
